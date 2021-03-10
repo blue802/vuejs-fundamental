@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+        <title>Bai 1</title>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            nav {
+                width: 90%;
+                max-width: 560px;
+                margin: auto;
+                margin-bottom: 2rem;
+            }
+
+            nav ul {
+                width: 100%;
+                display: flex;
+                border-radius: 2px;
+                overflow: hidden;
+            }
+
+            nav ul li {
+                list-style: none;
+                flex: 1;
+                color: white;
+                font-weight: bold;
+                text-transform: uppercase;
+                padding: 0.8rem 1rem;
+                font-size: 18px;
+                cursor: pointer;
+                background-color: #5b9cb8;
+            }
+
+            .active {
+                background-color: #e55e8b;
+            }
+
+            div {
+                text-align: center;
+                color: #83959d;
+                font-size: 1.5rem;
+                font-weight: bold;
+            }
+
+            div span {
+                padding: 4px;
+                background-color: #c7d9e2;
+                color: white;
+                border-radius: 2px;
+                text-transform: uppercase;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <nav>
+                <ul>
+                    <li
+                        v-for="tab in tabs"
+                        @click="_onActive(tab)"
+                        :class="{
+                        active: tab == active
+                    }"
+                    >
+                        {{tab}}
+                    </li>
+                </ul>
+            </nav>
+            <div>You chose <span>{{active}}</span></div>
+        </div>
+
+        <script>
+            const app = new Vue({
+                el: "#app",
+                data: {
+                    tabs: ["home", "projects", "services", "contact"],
+                    active: "home",
+                },
+                methods: {
+                    _onActive(tab) {
+                        this.active = tab;
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
