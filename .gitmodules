@@ -1,0 +1,3 @@
+[submodule "lesson-2/todo-list"]
+	path = lesson-2/todo-list
+	url = https://github.com/bluedev82/vuejs-fundamental
