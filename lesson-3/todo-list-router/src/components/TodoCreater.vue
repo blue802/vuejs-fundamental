@@ -12,34 +12,18 @@
 </template>
 
 <script>
-import axios from "axios";
-import shortid from "shortid";
-
 export default {
   name: "TodoCreater",
-  props: ["todos"],
   data() {
     return {
       value: "",
     };
   },
   methods: {
-    async addTodo() {
-      try {
-        const newTodo = {
-          id: shortid.generate(),
-          name: this.value,
-          status: false,
-        };
-        await axios.post(
-          "https://606b122af8678400172e585f.mockapi.io/todoItem",
-          newTodo
-        );
-        this.todos.push(newTodo);
-        this.value = "";
-      } catch (error) {
-        alert(error);
-      }
+    addTodo() {
+      const newTodo = { name: this.value, status: false };
+      this.$emit("handleAdd", newTodo);
+      this.value = "";
     },
   },
 };

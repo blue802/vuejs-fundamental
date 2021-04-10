@@ -1,13 +1,17 @@
 <template>
   <div class="todo-container">
     <h2>Todo List</h2>
-    <todo-creater :todos="todos" />
-    <todo-list :todos="todos" />
+    <todo-creater @handleAdd="addTodo" />
+    <todo-list
+      :todosProps="todos"
+      @handleEdit="editTodo"
+      @handleRemove="removeTodo"
+    />
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import { mapActions } from "vuex";
 import TodoCreater from "../components/TodoCreater.vue";
 import TodoList from "../components/TodoList.vue";
 
@@ -17,28 +21,16 @@ export default {
     TodoCreater,
     TodoList,
   },
-  data() {
-    return {
-      todos: [],
-      loading: false,
-    };
-  },
-  methods: {
-    async fetchData() {
-      try {
-        this.loading = true;
-        const res = await axios.get(
-          "https://606b122af8678400172e585f.mockapi.io/todoItem"
-        );
-        this.todos = res.data;
-        this.loading = false;
-      } catch (error) {
-        alert(error);
-      }
+  computed: {
+    todos() {
+      return this.$store.state.todos;
     },
   },
+  methods: {
+    ...mapActions(["fetchTodos", "addTodo", "editTodo", "removeTodo"]),
+  },
   mounted() {
-    this.fetchData();
+    this.fetchTodos();
   },
 };
 </script>

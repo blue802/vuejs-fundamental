@@ -1,29 +1,28 @@
 <template>
   <div class="todo-list">
-    <div v-for="todo in todos" :key="todo.id">
+    <div class="todo" v-for="todo in todos" :key="todo.id">
       <input
         type="checkbox"
         :name="todo"
         :id="todo.id"
         v-model="todo.status"
-        @click="editTodo(todo.id)"
+        @change="editTodo(todo)"
       />
       <label :for="todo.id" :class="[todo.status ? 'checked' : '']">
-        <template v-if="isEditMode === todo.id">
-          <input
-            type="text"
-            :ref="todo.id"
-            v-model="todo.name"
-            @blur="editTodo(todo.id), turnOffEditMode()"
-            @keyup.enter="editTodo(todo.id), turnOffEditMode()"
-          />
-        </template>
-        <template v-else>{{ todo.name }}</template>
+        <input
+          type="text"
+          :class="[editModeTodo === todo.id ? 'editMode' : '']"
+          :ref="todo.id"
+          v-model="todo.name"
+          @blur="editTodo(todo), turnOffEditMode()"
+          @keyup.enter="editTodo(todo), turnOffEditMode()"
+          :disabled="editModeTodo !== todo.id"
+        />
       </label>
-      <button class="btn btn--edit" @click="turnOnEditMode(todo.id)">
+      <button class="btn btn--edit" @click="toggleEditMode(todo.id)">
         <i class="fas fa-edit"></i>
       </button>
-      <button class="btn btn--remove" @click="removeTodo(todo.id)">
+      <button class="btn btn--remove" @click="removeTodo(todo)">
         <i class="fas fa-minus"></i>
       </button>
     </div>
@@ -31,64 +30,54 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   name: "TodoList",
-  props: ["todos"],
+  props: ["todosProps"],
   data() {
     return {
-      isEditMode: false,
+      editModeTodo: false,
     };
   },
+  computed: {
+    todos() {
+      return this.todosProps;
+    },
+  },
   methods: {
-    async removeTodo(id) {
-      try {
-        await axios.delete(
-          `https://606b122af8678400172e585f.mockapi.io/todoItem/${id}`
-        );
-        this.todos = this.todos.filter((todo) => todo.id !== id);
-      } catch (error) {
-        alert(error);
-      }
+    removeTodo(todo) {
+      this.$emit("handleRemove", todo);
     },
-    async editTodo(id) {
-      const newTodo = this.todos.find((todo) => todo.id === id);
-      try {
-        await axios.put(
-          `https://606b122af8678400172e585f.mockapi.io/todoItem/${id}`,
-          newTodo
-        );
-        await axios.put(
-          `https://606b122af8678400172e585f.mockapi.io/todoItem/${id}`,
-          newTodo
-        );
-      } catch (error) {
-        alert(error);
-      }
+    editTodo(todo) {
+      this.$emit("handleEdit", todo);
     },
-    turnOnEditMode(id) {
-      this.isEditMode = id;
+    toggleEditMode(id) {
+      if (this.editModeTodo === id) {
+        this.editModeTodo = false;
+      } else {
+        this.editModeTodo = id;
+      }
+      this.$refs[id][0].focus();
     },
     turnOffEditMode() {
-      this.isEditMode = false;
+      this.editModeTodo = false;
     },
   },
 };
 </script>
 
 <style>
-.todo-list > div {
-  display: flex;
+.todo-list > .todo {
   font-size: 1.25rem;
   align-items: center;
   margin-bottom: 0.5rem;
   background-color: aliceblue;
   padding: 0.5rem;
+  display: flex;
 }
 
 .todo-list > div > label {
-  flex: 1;
+  width: 100%;
+  display: flex;
   margin: 0;
 }
 
@@ -103,12 +92,16 @@ input[type="checkbox"] {
 
 .todo-list > div > label > input {
   border: none;
-  color: #42b983;
+  color: inherit;
   font-size: inherit;
   width: 100%;
   background-color: transparent;
   outline: none;
   font-family: inherit;
+}
+
+.todo-list > div > label > input.editMode {
+  color: #42b983;
 }
 
 .btn {
